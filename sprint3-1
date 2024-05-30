@@ -1,0 +1,32 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+using namespace std;
+
+int main() {
+    vector<int> queue;
+    int capacity = 100, lost = 0, under = 0;
+    int k = rand() % 20;
+
+    if (capacity < queue.size() + k) {
+        lost += queue.size() + k - capacity;
+        k = capacity - queue.size();
+    }
+
+    for (int i = 0; i < k; i++) {
+        queue.push_back(rand() % 20);
+    }
+
+    int n = rand() % 20;
+    for (int i = 0; i < n; i++) {
+        if (queue.size() != 0) {
+            queue.erase(queue.begin());
+        }
+    }
+    if (queue.size() < n) {
+        under += n - queue.size();
+    }
+    cout << "lost: "<<lost << endl;
+    cout << "under: " << under << endl;
+    return 0;
+}
