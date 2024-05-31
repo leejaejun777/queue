@@ -1,0 +1,66 @@
+#include <iostream>
+#include <Windows.h>
+#include <vector>
+#include <cstdlib>
+#include <fstream>
+#include <numeric>
+#include <algorithm>
+
+using namespace std;
+
+int main() {
+    int num_queues = 3;
+    vector<vector<int>> queues(num_queues);
+    int NI = 20;
+    int NO = 30;
+    int capacity = 100, lost = 0;
+    vector<int> NofPackets(120, 0);
+    int itime = 0, x, T = 1;
+
+    while (itime < 120) {
+        Sleep(T * 1000);
+        itime += T;
+
+        for (int q = 0; q < num_queues; q++) {
+            int ni = rand() % NI;
+            if (capacity < queues[q].size() + ni) {
+                lost += queues[q].size() + ni - capacity;
+                ni = capacity - queues[q].size();
+            }
+            for (int i = 0; i < ni; i++) {
+                queues[q].push_back(rand() % 20);
+            }
+            int no = rand() % NO;
+            for (int i = 0; i < no; i++) {
+                if (!queues[q].empty()) {
+                    queues[q].erase(queues[q].begin());
+                }
+            }
+            if (itime < NofPackets.size()) {
+                NofPackets[itime] += queues[q].size();
+            }
+        }
+        if (itime < NofPackets.size()) {
+            cout << "Time " << itime << ": " << NofPackets[itime] << endl;
+        }
+    }
+
+    ofstream outFile("packets3.txt");
+    if (!outFile) {
+        return 999;
+    }
+
+    for (int i = 0; i < 120; i++) {
+        outFile << NofPackets[i] << endl;
+    }
+    outFile.close();
+
+    int sum = accumulate(NofPackets.begin(), NofPackets.end(), 0);
+    double average = static_cast<double>(sum) / 120;
+    int max = *max_element(NofPackets.begin(), NofPackets.end());
+
+    cout << "average: " << average << endl;
+    cout << "max: " << max << endl;
+
+    return 0;
+}
